@@ -1,6 +1,6 @@
 from pyrogram import filters
 from pyrogram.enums import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from urllib.parse import quote_plus
 
 from config import MINI_APP_URL, LOG_GROUP_ID, YT_THUMBNAIL
@@ -77,7 +77,7 @@ async def play_command(client, message: Message):
             f"⏱️ <b>{strings.DURATION}:</b> {duration or 'Unknown'}\n\n"
             f"▶️ {strings.PLAY_BUTTON_TEXT}"
         ),
-        reply_markup=get_play_buttons(deep_link, webapp_url),
+        reply_markup=get_play_buttons(webapp_url),
         parse_mode=ParseMode.HTML
     )
 

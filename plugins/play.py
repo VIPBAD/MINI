@@ -7,8 +7,8 @@ from config import MINI_APP_URL, LOG_GROUP_ID, YT_THUMBNAIL
 from database.database import save_song_play
 from client import app
 from utils.youtube import YouTubeAPI
-from buttons import get_play_buttons
-import strings.en as strings
+from utils.buttons import get_play_buttons
+import utils.strings.en as strings
 
 yt_api = YouTubeAPI()
 queue = []

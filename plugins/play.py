@@ -1,6 +1,6 @@
 from pyrogram import filters
 from pyrogram.enums import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from urllib.parse import quote_plus
 
 from config import MINI_APP_URL, LOG_GROUP_ID, YT_THUMBNAIL
@@ -62,8 +62,9 @@ async def play_command(client, message: Message):
     title_encoded = quote_plus(title)
     thumb_encoded = quote_plus(thumb or YT_THUMBNAIL)
 
-    # Generate a unique deep link for the bot
-    deep_link = f"https://t.me/{client.username}?startapp={user.id}"
+    # Fetch bot username
+    me = await client.get_me()
+    deep_link = f"https://t.me/{me.username}?startapp={user.id}"
 
     webapp_url = f"{MINI_APP_URL}?audio={audio_url_encoded}&title={title_encoded}&thumb={thumb_encoded}"
     queue.append({"title": title, "duration": duration, "url": webapp_url})

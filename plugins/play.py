@@ -7,8 +7,11 @@ from config import MINI_APP_URL, LOG_GROUP_ID, YT_THUMBNAIL
 from database.database import save_song_play
 from client import app
 from utils.youtube import YouTubeAPI
+from buttons import get_play_buttons
+import strings.en as strings
 
 yt_api = YouTubeAPI()
+queue = []
 
 @app.on_message(filters.command("play"))
 async def play_command(client, message: Message):
@@ -17,70 +20,86 @@ async def play_command(client, message: Message):
 
     if len(query) < 2 or not query[1].strip():
         return await message.reply(
-            "❌ Please provide a song name or YouTube URL.\n\nExample: `/play Shape of You`",
+            strings.NO_QUERY,
             quote=True
         )
 
     song_query = query[1].strip()
-    status_msg = await message.reply("🔍 Searching for the song...")
+    status_msg = await message.reply(strings.SEARCHING)
 
     try:
-        # Get song info
         title, duration, duration_sec, thumb, vidid = await yt_api.details(song_query)
-
-        # Get audio streamable URL
         success, audio_url = await yt_api.video_url(f"https://www.youtube.com/watch?v={vidid}")
         if not success:
             raise Exception(f"Failed to get audio URL.\n\n{audio_url}")
 
     except Exception as e:
-        error_text = f"❌ Failed to fetch song.\n\nError: <code>{str(e)}</code>"
+        error_text = strings.FETCH_ERROR.format(error=str(e))
         try:
             return await status_msg.edit_text(error_text, parse_mode=ParseMode.HTML)
         except:
             await status_msg.delete()
             return await message.reply(error_text, parse_mode=ParseMode.HTML, quote=True)
 
-    # Save play info
     await save_song_play(user.id, user.first_name, title, duration or "Unknown")
 
-    # Log to group
     try:
         await client.send_message(
             chat_id=LOG_GROUP_ID,
             text=(
-                f"🎶 <b>New Song Played</b>\n\n"
-                f"👤 <b>User:</b> {user.first_name} (ID: <code>{user.id}</code>)\n"
-                f"🎧 <b>Song:</b> {title}\n"
-                f"⏱️ <b>Duration:</b> {duration or 'Unknown'}\n"
-                f"💬 <b>Chat ID:</b> <code>{message.chat.id}</code>"
+                f"🎶 <b>{strings.NEW_SONG}</b>\n\n"
+                f"👤 <b>{strings.USER}:</b> {user.first_name} (ID: <code>{user.id}</code>)\n"
+                f"🎧 <b>{strings.SONG}:</b> {title}\n"
+                f"⏱️ <b>{strings.DURATION}:</b> {duration or 'Unknown'}\n"
+                f"💬 <b>{strings.CHAT_ID}:</b> <code>{message.chat.id}</code>"
             ),
             parse_mode=ParseMode.HTML
         )
     except Exception as log_error:
         print(f"[LOG ERROR]: {log_error}")
 
-    # Build WebApp URL
     audio_url_encoded = quote_plus(audio_url)
     title_encoded = quote_plus(title)
     thumb_encoded = quote_plus(thumb or YT_THUMBNAIL)
 
     webapp_url = f"{MINI_APP_URL}?audio={audio_url_encoded}&title={title_encoded}&thumb={thumb_encoded}"
+    queue.append({"title": title, "duration": duration, "url": webapp_url})
 
-    # Final music player response
     await status_msg.delete()
     await message.reply_photo(
         photo=thumb or YT_THUMBNAIL,
         caption=(
             f"🎵 <b>{title}</b>\n"
-            f"⏱️ <b>Duration:</b> {duration or 'Unknown'}\n\n"
-            f"▶️ Tap the button below to open the Web Music Player!"
+            f"⏱️ <b>{strings.DURATION}:</b> {duration or 'Unknown'}\n\n"
+            f"▶️ {strings.PLAY_BUTTON_TEXT}"
         ),
-        reply_markup=InlineKeyboardMarkup([[
-            InlineKeyboardButton(
-                text="🎧 Play in WebApp",
-                web_app=WebAppInfo(url=webapp_url)
-            )
-        ]]),
+        reply_markup=get_play_buttons(webapp_url),
         parse_mode=ParseMode.HTML
     )
+
+@app.on_message(filters.command("skip"))
+async def skip_command(client, message: Message):
+    if queue:
+        queue.pop(0)
+        if queue:
+            await message.reply(strings.SONG_SKIPPED, quote=True)
+        else:
+            await message.reply(strings.NO_MORE_SONGS, quote=True)
+    else:
+        await message.reply(strings.NO_SONGS_QUEUE, quote=True)
+
+@app.on_message(filters.command("pause"))
+async def pause_command(client, message: Message):
+    await message.reply(strings.SONG_PAUSED, quote=True)
+
+@app.on_message(filters.command("resume"))
+async def resume_command(client, message: Message):
+    await message.reply(strings.SONG_RESUMED, quote=True)
+
+# Check queue and notify when empty
+async def check_queue(client):
+    while True:
+        if not queue:
+            await client.send_message(message.chat.id, strings.NO_MORE_SONGS)
+            break
+        await asyncio.sleep(1)

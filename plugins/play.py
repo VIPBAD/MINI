@@ -66,24 +66,16 @@ async def play_command(client, message: Message):
     queue.append({"title": title, "duration": duration, "url": webapp_url})
 
     await status_msg.delete()
-    try:
-        await message.reply_photo(
-            photo=thumb or YT_THUMBNAIL,
-            caption=(
-                f"🎵 <b>{title}</b>\n"
-                f"⏱️ <b>{strings.DURATION}:</b> {duration or 'Unknown'}\n\n"
-                f"▶️ {strings.PLAY_BUTTON_TEXT}"
-            ),
-            reply_markup=get_play_buttons(webapp_url),
-            parse_mode=ParseMode.HTML
-        )
-    except Exception as e:
-        await message.reply(
+    await message.reply_photo(
+        photo=thumb or YT_THUMBNAIL,
+        caption=(
             f"🎵 <b>{title}</b>\n"
             f"⏱️ <b>{strings.DURATION}:</b> {duration or 'Unknown'}\n\n"
-            f"❌ Failed to load WebApp. Use the URL: {webapp_url}",
-            parse_mode=ParseMode.HTML
-        )
+            f"▶️ {strings.PLAY_BUTTON_TEXT}"
+        ),
+        reply_markup=get_play_buttons(webapp_url),
+        parse_mode=ParseMode.HTML
+    )
 
 @app.on_message(filters.command("skip"))
 async def skip_command(client, message: Message):
@@ -104,7 +96,7 @@ async def pause_command(client, message: Message):
 async def resume_command(client, message: Message):
     await message.reply(strings.SONG_RESUMED, quote=True)
 
-# Check queue and notify when empty (placeholder, integrate with actual player logic)
+# Check queue and notify when empty
 async def check_queue(client):
     while True:
         if not queue:

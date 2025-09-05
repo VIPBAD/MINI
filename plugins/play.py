@@ -8,7 +8,7 @@ from database.database import save_song_play
 from client import app
 from utils.youtube import YouTubeAPI
 from utils.buttons import get_play_buttons
-import utils.strings.en as strings
+import utils.strings as strings
 
 yt_api = YouTubeAPI()
 queue = []

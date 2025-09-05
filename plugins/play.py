@@ -7,8 +7,8 @@ from config import MINI_APP_URL, LOG_GROUP_ID, YT_THUMBNAIL
 from database.database import save_song_play
 from client import app
 from utils.youtube import YouTubeAPI
-from utils.buttons import get_play_buttons
-import utils.strings as strings
+from buttons import get_play_buttons
+import strings.en as strings
 
 yt_api = YouTubeAPI()
 queue = []
@@ -62,6 +62,9 @@ async def play_command(client, message: Message):
     title_encoded = quote_plus(title)
     thumb_encoded = quote_plus(thumb or YT_THUMBNAIL)
 
+    # Generate a unique deep link for the bot
+    deep_link = f"https://t.me/{client.username}?startapp={user.id}"
+
     webapp_url = f"{MINI_APP_URL}?audio={audio_url_encoded}&title={title_encoded}&thumb={thumb_encoded}"
     queue.append({"title": title, "duration": duration, "url": webapp_url})
 
@@ -73,7 +76,7 @@ async def play_command(client, message: Message):
             f"⏱️ <b>{strings.DURATION}:</b> {duration or 'Unknown'}\n\n"
             f"▶️ {strings.PLAY_BUTTON_TEXT}"
         ),
-        reply_markup=get_play_buttons(webapp_url),
+        reply_markup=get_play_buttons(deep_link, webapp_url),
         parse_mode=ParseMode.HTML
     )
 
@@ -86,7 +89,7 @@ async def skip_command(client, message: Message):
         else:
             await message.reply(strings.NO_MORE_SONGS, quote=True)
     else:
-        await message.reply(strings.NO_SONGS_QUEUE, quote=True)
+        await message.reply(strings.NO_SONS_QUEUE, quote=True)
 
 @app.on_message(filters.command("pause"))
 async def pause_command(client, message: Message):

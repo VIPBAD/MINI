@@ -15,3 +15,5 @@ YT_THUMBNAIL = os.getenv("YT_THUMBNAIL", "https://i.ibb.co/JFr2D1nZ/photo-2025-0
 
 # Mini App Base URL (e.g., Render or Vercel deployed web app)
 MINI_APP_URL = os.getenv("MINI_APP_URL", "https://api-ojh9.onrender.com/")
+
+BOT_USERNAME = "ANONMUSIC11_BOT"

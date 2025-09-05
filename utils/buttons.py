@@ -1,11 +1,11 @@
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-def get_play_buttons(webapp_url):
+def get_play_buttons(deep_link, webapp_url):
     return InlineKeyboardMarkup([
         [
             InlineKeyboardButton(
                 text="🎧 Join Room",
-                web_app=WebAppInfo(url=webapp_url)
+                url=deep_link  # Changed to URL for deep link
             )
         ],
         [

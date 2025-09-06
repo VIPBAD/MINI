@@ -14,6 +14,6 @@ LOG_GROUP_ID = int(os.getenv("LOG_GROUP_ID", -1002093247039))
 YT_THUMBNAIL = os.getenv("YT_THUMBNAIL", "https://i.ibb.co/JFr2D1nZ/photo-2025-06-04-08-20-01-7512006038174826500.jpg")
 
 # Mini App Base URL (e.g., Render or Vercel deployed web app)
-MINI_APP_URL = os.getenv("MINI_APP_URL", "https://api-ojh9.onrender.com/")
+MINI_APP_URL = os.getenv("MINI_APP_URL", "https://api2-86uy.onrender.com")
 
 BOT_USERNAME = "ANONMUSIC11_BOT"

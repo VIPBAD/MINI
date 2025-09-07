@@ -19,7 +19,7 @@ yt_api = YouTubeAPI()
 log = logging.getLogger(__name__)
 
 
-@app.on_message(filters.command("play") & ~filters.edited)
+@app.on_message(filters.command("play"))
 async def play_command(client, message: Message):
     user = message.from_user
     if not user:

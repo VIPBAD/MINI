@@ -3,7 +3,7 @@ import os
 # Telegram Bot Credentials
 API_ID = int(os.getenv("API_ID", 17609888))  # Replace with your API ID
 API_HASH = os.getenv("API_HASH", "6538740296c179c5f5a2c52f911864d1")
-BOT_TOKEN = os.getenv("BOT_TOKEN", "8410391376:AAF2GqNdUnl1Rh8CZIYwiwj3PfPv27-Dcg8")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8410391376:AAH2jI50Zll9u8QOaZG1gj-i-NVWzgdnncw")
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://mongodbflex:L3GxCeWU3UcgFZZX-hwjiwjve@cluster0.czbo8.mongodb.net/?retryWrites=true&w=majority")
 
